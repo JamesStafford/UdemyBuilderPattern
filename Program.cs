@@ -7,9 +7,10 @@ namespace BuilderDesignPattern
 {
     public class HtmlElement
     {
-        public string Name, Text;
-        public List<HtmlElement> Elements = new List<HtmlElement>();
-        private const int indentSize = 2;
+        public string Name;
+        private readonly string _text;
+        public readonly List<HtmlElement> Elements = new List<HtmlElement>();
+        private const int IndentSize = 2;
 
         public HtmlElement()
         {
@@ -19,7 +20,7 @@ namespace BuilderDesignPattern
         public HtmlElement(string name, string text)
         {
             Name = name ?? throw new ArgumentNullException(nameof(name));
-            Text = text ?? throw new ArgumentNullException(nameof(text));
+            _text = text ?? throw new ArgumentNullException(nameof(text));
         }
 
         private string ToStringImpl(int ident)
@@ -27,10 +28,10 @@ namespace BuilderDesignPattern
             var stringBuilder = new StringBuilder();
             
             stringBuilder.AppendLine($"{CreateIndentation(ident)}<{Name}");
-            if (!string.IsNullOrWhiteSpace(Text))
+            if (!string.IsNullOrWhiteSpace(_text))
             {
                 stringBuilder.Append(CreateIndentation(ident + 1));
-                stringBuilder.AppendLine(Text);
+                stringBuilder.AppendLine(_text);
             }
 
             foreach (var element in Elements)
@@ -43,7 +44,7 @@ namespace BuilderDesignPattern
 
         private string CreateIndentation(int ident)
         {
-            return new string(' ', indentSize * ident);
+            return new string(' ', IndentSize * ident);
         }
         
         public override string ToString()
@@ -55,34 +56,34 @@ namespace BuilderDesignPattern
     public class HtmlBuilder
     {
         private readonly string _rootName;
-        private HtmlElement root = new HtmlElement();
+        private HtmlElement _root = new HtmlElement();
 
         public HtmlBuilder(string rootName)
         {
             _rootName = rootName;
-            root.Name = rootName;
+            _root.Name = rootName;
         }
 
         public void AddChild(string childName, string childText)
         {
             var element = new HtmlElement(childName, childText);
-            root.Elements.Add(element);
+            _root.Elements.Add(element);
         }
 
         public override string ToString()
         {
-            return root.ToString();
+            return _root.ToString();
         }
 
         public void Clear()
         {
-            root = new HtmlElement {Name = _rootName};
+            _root = new HtmlElement {Name = _rootName};
         }
     }
     
     public static class Program
     {
-        private static void Main(string[] args)
+        private static void Main()
         {
             var builder = new HtmlBuilder("ul");
             builder.AddChild("li", "hello");
